@@ -1,101 +1,124 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useEffect, useState } from "react";
+import { User } from "./types/user";
+import Table from "./components/Table";
+
+const UsersPage = () => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [total, setTotal] = useState<number>(0);
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(5);
+  const [filter, setFilter] = useState<string>("");
+  const [sort, setSort] = useState<string>("name");
+  const [loading, setLoading] = useState<boolean>(false);
+
+  // Fetch users based on filter, pagination, and sorting
+  const fetchUsers = async () => {
+    setLoading(true);
+
+    // Make the API request to get users based on the current state (pagination, sorting, filtering)
+    const res = await fetch(
+      `/api/users?page=${page}&limit=${limit}&filter=${filter}&sort=${sort}`
+    );
+    console.log("🚀 ~ fetchUsers ~ res:", res);
+    const data = await res.json();
+
+    setUsers(data.data);
+    setTotal(data.total);
+    setLoading(false);
+  };
+
+  // Handle page change
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  // Handle filter change
+  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFilter(event.target.value);
+    setPage(1); // Reset to first page when filter changes
+  };
+
+  // Handle sorting change
+  const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSort(event.target.value);
+  };
+
+  useEffect(() => {
+    // Fetch the data whenever pagination, sorting, or filtering changes
+    fetchUsers();
+  }, [page, limit, filter, sort]);
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="h-screen w-full bg-white p-10 gap-4 flex flex-col items-center justify-start">
+      <h1 className="text-3xl font-bold text-center mb-6">Users List: </h1>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+      <div className="flex flex-row w-full justify-start gap-6">
+        {/* Filter Input */}
+        <input
+          type="text"
+          placeholder="Filter by name or company"
+          value={filter}
+          onChange={handleFilterChange}
+          className="border border-gray-300 p-2 rounded"
+        />
+
+        {/* Sorting Dropdown */}
+        <select
+          value={sort}
+          onChange={handleSortChange}
+          className="border border-gray-300 p-2 rounded"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <option value="name">Name</option>
+          <option value="email">Email</option>
+          <option value="company">Company</option>
+        </select>
+      </div>
+
+      {/* Loading State */}
+      {loading ? (
+        <p className="text-center">Loading...</p>
+      ) : (
+        // <>
+        //   <ul className="list-none p-0">
+        //     {users.map((user) => (
+        //       <li
+        //         key={user.id}
+        //         className="p-4 border-b border-gray-200 flex flex-col items-center text-lg font-bold text-center"
+        //       >
+        //         <h2>{user.name}</h2>
+        //         <p>{user.email}</p>
+        //         <p>{user.company.name}</p>
+        //       </li>
+        //     ))}
+        //   </ul>
+
+        //   {/* Pagination Controls */}
+        //   <div className="flex justify-between mt-4">
+        //     <button
+        //       onClick={() => handlePageChange(page - 1)}
+        //       disabled={page === 1}
+        //       className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
+        //     >
+        //       Previous
+        //     </button>
+        //     <span>
+        //       Page {page} of {Math.ceil(total / limit)}
+        //     </span>
+        //     <button
+        //       onClick={() => handlePageChange(page + 1)}
+        //       disabled={page * limit >= total}
+        //       className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
+        //     >
+        //       Next
+        //     </button>
+        //   </div>
+        // </>
+        <Table users={users} />
+      )}
     </div>
   );
-}
+};
+
+export default UsersPage;
