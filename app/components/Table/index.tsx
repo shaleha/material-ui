@@ -3,16 +3,17 @@ import { FC } from "react";
 import { getColumnHeaders } from "./utils";
 import TableHeader from "./TableHeader";
 import TableBody from "./TableBody";
+import { tableDynamicProps, useTableContext } from "../Providers/TableProvider";
 
-interface UsersTableProps {
+export interface UsersTableProps extends tableDynamicProps {
   users: User[];
 }
 
 const Table: FC<UsersTableProps> = ({ users }) => {
-  console.log("🚀 ~ users:", users);
   const headers = getColumnHeaders(users) ?? [];
+  const baseClass = "w-full shadow-lg";
   return (
-    <table className="w-full border rounded-xl shadow-lg border-gray-300">
+    <table className={`${baseClass}`}>
       <TableHeader headers={headers} />
       <TableBody users={users} />
     </table>

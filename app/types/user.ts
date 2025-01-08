@@ -8,6 +8,10 @@ export interface User {
     suite: string;
     city: string;
     zipcode: string;
+    geo: {
+      lat: string;
+      long: string;
+    };
   };
   phone: string;
   website: string;
@@ -16,22 +20,6 @@ export interface User {
     catchPhrase: string;
     bs: string;
   };
-}
-
-export interface TableUser {
-  id: number;
-  name: string;
-  username: string;
-  email: string;
-  "address street": string;
-  "address suite": string;
-  "address city": string;
-  "address zipcode": string;
-  phone: string;
-  website: string;
-  "company name": string;
-  "company catchPhrase": string;
-  "company bs": string;
 }
 
 export interface UsersPageProps {

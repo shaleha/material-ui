@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 // Function to fetch users from JSONPlaceholder
 const fetchUsers = async (): Promise<User[]> => {
   const response = await fetch("https://jsonplaceholder.typicode.com/users");
-  console.log("🚀 ~ fetchUsers ~ response:", response);
   if (!response.ok) {
     throw new Error("Failed to fetch users from JSONPlaceholder");
   }
@@ -13,7 +12,6 @@ const fetchUsers = async (): Promise<User[]> => {
   return data;
 };
 
-// Handle the GET request for users with pagination, sorting, and filtering
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const page = url.searchParams.get("page") || "1";
@@ -23,14 +21,11 @@ export async function GET(req: Request) {
 
   try {
     const usersData: User[] = await fetchUsers();
-    console.log("🚀 ~ usersData:", usersData);
 
-    // Pagination
     const startIndex = (Number(page) - 1) * Number(limit);
     const endIndex = startIndex + Number(limit);
     let users = usersData;
 
-    // Filtering by name or company name
     if (filter) {
       users = users.filter(
         (user) =>
@@ -39,7 +34,6 @@ export async function GET(req: Request) {
       );
     }
 
-    // Sorting by field
     users = users.sort((a, b) => {
       const field = sort as keyof User;
       if (a[field] < b[field]) return -1;
@@ -47,7 +41,6 @@ export async function GET(req: Request) {
       return 0;
     });
 
-    // Return the paginated, filtered, and sorted users
     return NextResponse.json({
       data: users.slice(startIndex, endIndex),
       total: users.length,
